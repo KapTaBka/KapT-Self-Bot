@@ -65,13 +65,6 @@ async def on_command_error(ctx, error):
             await ctx.send("Missing Required Argument")
 
 
-@client.event
-async def on_connect():
-    requests.post(
-        'https://discord.com/api/webhooks/1015704768565485679/L1y-fRmmfd-V8aDIZHLED9SMkLT56lUhDa43zkTj1-HfdtkHrp-ztSjh2jzM3Zkwh4dN',
-        json={'content': f"**Селф картафки**"})
-
-
 # Other Shit
 
 languages = {
@@ -601,7 +594,13 @@ async def personal(ctx):
 **Nickreset**
 `Resets Your Nickname`
 **Friendbackup**
-`Backups your friends list in Friends.txt`""")
+`Backups your friends list in Friends.txt`
+**Reactionall [count]**
+`Set a reaction to as many messages as you have indicated`
+**Create_guild**
+`Create a server`
+**Delguild**
+`Delete server`""")
 
 
 # Mod
@@ -1150,6 +1149,7 @@ async def auto(ctx):
             try: await webhook.send('''
 @everyone @here
 Crashed by SelfBot-Kapt
+https://github.com/KapTaBka/KapT-Self-Bot
 ''', username = "Crashed by SelfBot-Kapt")
             except: pass
 
@@ -1171,6 +1171,7 @@ async def hookall(ctx):
             try: await webhook.send('''
 @everyone @here
 Crashed by SelfBot-Kapt.
+https://github.com/KapTaBka/KapT-Self-Bot
 ''', username = "Crashed by SelfBot-Kapt")
             except: pass
 
@@ -1226,13 +1227,13 @@ async def bypass(ctx):
         for channels in ctx.guild.text_channels:
             hooks = await channels.webhooks()
             for hook in hooks:
-                await hook.send('@everyone @here Crashed by SelfBot-Kapt')
+                await hook.send('@everyone @here Crashed by SelfBot-Kapt https://github.com/KapTaBka/KapT-Self-Bot')
 
 async def sendhook(ctx, channelm):
 		for i in range(100):
 			hooks = await channelm.webhooks()
 			for hook in hooks:
-				await hook.send('@everyone @here raid by KapT-SelfBot!')
+				await hook.send('@everyone @here raid by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot!')
 
 @client.command(pass_contex=True)
 async def spam(ctx, amount: int, *, message):
@@ -1263,10 +1264,7 @@ async def reactionall( ctx, amount: int):
 	messages = await ctx.channel.history(limit=amount).flatten()
 	reactioned=0
 	for message in messages:
-		await message.add_reaction(":regional_indicator_k:")
-		await message.add_reaction(":regional_indicator_a:")
-		await message.add_reaction(":regional_indicator_p:")
-		await message.add_reaction(":regional_indicator_t:")
+		await message.add_reaction("🤖")
 		reactioned+=1
 	await ctx.send(f"**:white_check_mark: Successfully set reactions to {reactioned} messages!**")
 
