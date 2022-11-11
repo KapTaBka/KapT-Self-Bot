@@ -362,8 +362,6 @@ async def miscellaneous(ctx):
 `Sends a gif of hugging the mentioned members/member`
 **Kiss [member] <member>**
 `Sends a gif of kissing the mentioned members/member`
-**Spam [text]**
-`Spams The Specified Text`
 **Ascii [text]**
 `Sends The Specified Text In Ascii`
 **Wizz**
