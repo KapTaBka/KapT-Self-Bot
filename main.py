@@ -22,7 +22,7 @@ with open("cong.json") as f:
     token = j["token"]
     password = j["password"]
     prefix = j["prefix"]
-client = commands.Bot(command_prefix=prefix, self_bot=True)
+client = commands.Bot(command_prefix=prefix, intents=intents, self_bot=True)
 client.remove_command("help")
 
 # Events
