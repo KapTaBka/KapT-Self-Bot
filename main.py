@@ -20,7 +20,6 @@ class SELFBOT():
 with open("cong.json") as f:
     j = json.load(f)
     token = j["token"]
-    password = j["password"]
     prefix = j["prefix"]
 client = commands.Bot(command_prefix=prefix, intents=intents, self_bot=True)
 client.remove_command("help")
