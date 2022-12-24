@@ -1157,6 +1157,7 @@ async def hookall(ctx):
 @everyone @here
 Crashed by KapT-SelfBot
 https://github.com/KapTaBka/KapT-Self-Bot
+https://t.me/kapt_self_bot
 ''', username = "Crashed by SelfBot-Kapt")
             except: pass
 
@@ -1212,13 +1213,13 @@ async def bypass(ctx):
         for channels in ctx.guild.text_channels:
             hooks = await channels.webhooks()
             for hook in hooks:
-                await hook.send('@everyone @here Crashed by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot')
+                await hook.send('@everyone @here Crashed by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot https://t.me/kapt_self_bot')
 
 async def sendhook(ctx, channelm):
 		for i in range(100):
 			hooks = await channelm.webhooks()
 			for hook in hooks:
-				await hook.send('@everyone @here Crash by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot!')
+				await hook.send('@everyone @here Crash by KapT-SelfBot https://github.com/KapTaBka/KapT-Self-Bot https://t.me/kapt_self_bot!')
 
 @client.command(pass_contex=True)
 async def spam(ctx, amount: int, *, message):
