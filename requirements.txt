@@ -5,3 +5,4 @@ gtts
 datetime
 asyncio
 requests
+prettytable
