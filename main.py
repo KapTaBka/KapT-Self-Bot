@@ -19,7 +19,7 @@ import requests as rq
 from prettytable import PrettyTable
 
 class SELFBOT():
-    __version__ = 1
+    __version__ = 1.1
 
 application_id = 1048594623062351952
 large_image_id = 1048596984862347294
