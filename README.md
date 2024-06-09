@@ -1,5 +1,5 @@
 ## EN
-# [KapT-SelfBot](https://t.me/kapt_self_bot)
+# [KapT-SelfBot](https://t.me/KapTaBka)
 ## Self bot that was supposed to be released a year ago, but I scored on it
 # Customization:
 We go into cong.json and set it as it was already written there
@@ -7,14 +7,14 @@ We go into cong.json and set it as it was already written there
 ## A little about selfies:
 Self is multifunctional, it will improve (if I'm not too lazy)
 
-## News about self bot - https://t.me/kapt_self_bot
+## Owner bio -  https://t.me/KapTaBka
 
 What is not working?
 
-Write to me in **[PM](https://discord.com/users/889918463546650644)**
+Write to me in **[PM](https://discord.com/users/445954543230910465)**
 
 ## RU
-# [KapT-SelfBot](https://t.me/kapt_self_bot)
+# [KapT-SelfBot](https://t.me/KapTaBka)
 ## Селф бот который должен был выйти год назад, но я забил на него
 
 
@@ -26,7 +26,7 @@ Write to me in **[PM](https://discord.com/users/889918463546650644)**
 ## Почему он на английском?
 **Картавый**, точнее я, делал его для всех, и планировал сделать переключения языка, но было лень и передумал, иб сделаю. Не понимаете языка? Либо учите английский, либо не используйте селфа.
 
-## Новости про селф бота - https://t.me/kapt_self_bot
+## Био овнера - https://t.me/KapTaBka
 
 Че то не работвет?
 
